@@ -1,0 +1,81 @@
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const passport = require('passport');
+const config = require('./config/env');
+const http = require('http');
+
+mongoose.connect(config.database.name, { useNewUrlParser: true });
+// On Connection
+mongoose.connection.on('connected', () => {
+    console.log('Connected to Database ' + config.database.name);
+});
+// On Error
+mongoose.connection.on('error', (err) => {
+    console.log('Database error ' + err);
+});
+const app = express();
+//CORS
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
+
+//Ports
+const port = process.env.PORT || 3000;
+var production = false;
+
+//CORS
+if (production) {
+    //app.use(cors({ origin: 'address_here' }));
+} else {
+    app.use(cors({ origin: "*" }));   
+}
+
+// Set Static Folder
+app.use('/assets', express.static('assets'));
+app.use('/public', express.static('public'));
+
+// Body Parser Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+require('./config/passport')(passport);
+
+if (production) {
+
+    var distDir = __dirname + "/dist/";
+
+    app.use('/', express.static(distDir));
+
+    app.get('*', (req, res) => {
+        res.sendFile(distDir + "index.html");
+    });
+    const server = http.createServer(app);
+    server.listen(port, () => {
+        console.log('Server started on port ' + port);
+    });
+    app.use(express.static(distDir));
+}
+else {
+    app.get('/', (req, res) => {
+        res.send('HELLO WORLD!');
+        //res.redirect('http://localhost:4200')
+    });
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'public/index.html'));
+    });
+
+    // Start Server
+    app.listen(port, () => {
+        console.log('Server started on port ' + port);
+    });
+}
