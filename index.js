@@ -17,7 +17,7 @@ mongoose.connection.on('error', (err) => {
     console.log('Database error ' + err);
 });
 const app = express();
-//CORS
+
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -43,11 +43,6 @@ app.use('/public', express.static('public'));
 // Body Parser Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Passport Middleware
-app.use(passport.initialize());
-app.use(passport.session());
-require('./config/passport')(passport);
 
 if (production) {
 
