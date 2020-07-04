@@ -1,0 +1,19 @@
+{
+  "name": "was_backend",
+  "version": "1.0.0",
+  "description": "WAS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/narayanansl10/water_accounting_system_backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/narayanansl10/water_accounting_system_backend/issues"
+  },
+  "homepage": "https://github.com/narayanansl10/water_accounting_system_backend#readme"
+}
