@@ -15,5 +15,14 @@
   "bugs": {
     "url": "https://github.com/narayanansl10/water_accounting_system_backend/issues"
   },
-  "homepage": "https://github.com/narayanansl10/water_accounting_system_backend#readme"
+  "homepage": "https://github.com/narayanansl10/water_accounting_system_backend#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "http": "0.0.1-security",
+    "mongoose": "^5.9.21",
+    "passport": "^0.4.1",
+    "path": "^0.12.7"
+  }
 }
