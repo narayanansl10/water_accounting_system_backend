@@ -18,6 +18,10 @@ const LoginDetailsSchema = mongoose.Schema({
     aadhar_number: {
         type: String,
         required: true
+    },
+    admin_role:{
+        type: Boolean,
+        require: true
     }
 });
 

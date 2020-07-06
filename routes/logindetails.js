@@ -8,7 +8,8 @@ router.post('/create', (req, res, next) => {
         user_name: req.body.user_name,
         phonenumber: req.body.phonenumber,
         password: req.body.password,
-        aadhar_number: req.body.aadhar_number
+        aadhar_number: req.body.aadhar_number,
+        admin_role:req.body.admin_role
     });
 
     LoginDetails.addLogin(newLogin, (err, user) => {
@@ -40,7 +41,8 @@ router.post('/update/:id', (req, res) => {
         user_name: req.body.user_name,
         phonenumber: req.body.phonenumber,
         password: req.body.password,
-        aadhar_number: req.body.aadhar_number
+        aadhar_number: req.body.aadhar_number,
+        admin_role: req.body.admin_role
     };
     
     LoginDetails.findByIdAndUpdate(req.params.id, { $set: newLogin }, {new:true},(err, doc) => {

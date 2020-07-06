@@ -5,7 +5,7 @@ const DistrictSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    state_name:{
+    state_id:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'State',
         required:true

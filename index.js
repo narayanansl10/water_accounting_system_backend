@@ -26,8 +26,12 @@ app.use(function(req, res, next) {
 
 //Routes
 const state=require('./routes/states');
+const district=require('./routes/districts');
 const cropInfo=require('./routes/cropinfo');
 const LoginDetails=require('./routes/logindetails');
+const taluk= require('./routes/taluks');
+const WaterInfo = require('./routes/waterinfo');
+const Plantation = require('./routes/plantations');
 //Ports
 const port = process.env.PORT || 3000;
 var production = false;
@@ -49,8 +53,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //App Starts
 app.use('/states',state);
+app.use('/districts',district);
 app.use('/cropinfo',cropInfo);
 app.use('/logindetails',LoginDetails);
+app.use('/taluks',taluk);
+app.use('/waterinfo',WaterInfo);
+app.use('/plantations',Plantation);
 if (production) {
 
     var distDir = __dirname + "/dist/";

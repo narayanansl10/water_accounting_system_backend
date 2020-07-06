@@ -5,7 +5,7 @@ const TalukSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    district_name:{
+    district_id:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'District',
         required:true

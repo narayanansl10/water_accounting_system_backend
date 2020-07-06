@@ -1,17 +1,12 @@
 const mongoose = require('mongoose');
 //Plantation Schema
 const PlantationSchema = mongoose.Schema({
-    user_details:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref:'UserDetails',
-        required:true
-    },
-    crop_name:{
+    crop_id:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'CropInfo',
         required:true
     },
-    percentage:{
+    area:{
         type: Number,
         required: true
     },

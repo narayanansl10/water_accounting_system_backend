@@ -5,7 +5,7 @@ const WaterInfoSchema = mongoose.Schema({
         type: String,
         required: true
     },  
-    taluk_name:{
+    taluk_id:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'Taluk',
         required:true
