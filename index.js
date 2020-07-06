@@ -24,6 +24,10 @@ app.use(function(req, res, next) {
     next();
   });
 
+//Routes
+const state=require('./routes/states');
+const cropInfo=require('./routes/cropinfo');
+const LoginDetails=require('./routes/logindetails');
 //Ports
 const port = process.env.PORT || 3000;
 var production = false;
@@ -43,6 +47,10 @@ app.use('/public', express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//App Starts
+app.use('/states',state);
+app.use('/cropinfo',cropInfo);
+app.use('/logindetails',LoginDetails);
 if (production) {
 
     var distDir = __dirname + "/dist/";
