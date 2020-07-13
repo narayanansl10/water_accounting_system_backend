@@ -32,6 +32,7 @@ const LoginDetails=require('./routes/logindetails');
 const taluk= require('./routes/taluks');
 const WaterInfo = require('./routes/waterinfo');
 const Plantation = require('./routes/plantations');
+const UserDetails = require('./routes/userdetails')
 //Ports
 const port = process.env.PORT || 3000;
 var production = false;
@@ -59,6 +60,7 @@ app.use('/logindetails',LoginDetails);
 app.use('/taluks',taluk);
 app.use('/waterinfo',WaterInfo);
 app.use('/plantations',Plantation);
+app.use('/userdetails',UserDetails);
 if (production) {
 
     var distDir = __dirname + "/dist/";
