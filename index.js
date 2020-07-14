@@ -25,6 +25,7 @@ app.use(function(req, res, next) {
   });
 
 //Routes
+const auth = require('./routes/auth');
 const state=require('./routes/states');
 const district=require('./routes/districts');
 const cropInfo=require('./routes/cropinfo');
@@ -53,6 +54,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //App Starts
+app.use('/auth', auth);
 app.use('/states',state);
 app.use('/districts',district);
 app.use('/cropinfo',cropInfo);

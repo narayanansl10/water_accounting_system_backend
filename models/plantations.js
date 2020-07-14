@@ -6,14 +6,46 @@ const PlantationSchema = mongoose.Schema({
         ref:'CropInfo',
         required:true
     },
-    area:{
+    area_of_plantation:{
         type: Number,
         required: true
     },
     plantation_date:{
         type: String,
         required: true
+    },
+    water_need:{
+        type: Number,
+        required:true
+    },
+    taluk_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Taluk',
+        required: true
+    },
+    village_name: {
+        type:String,
+        required: true
     }
 });
 
-const Plantation = module.exports = mongoose.model('Plantation', PlantationSchema);
+function calculateDischarge(area,duty){
+    return area/duty;
+}
+
+function calculateDuty(basePeriod,delta,rainfall){
+    return (864*basePeriod)/(delta-rainfall);
+}
+
+function UserDetailsByTaluk(taluk_id){
+    Plantation.find({taluk_id:req.body.taluk_id},(err,docs)=> {
+        if(!err){
+            res.send(docs);
+        }
+        else{
+            res.json({'error':'Error Fetching User Details By Taluk'})
+        }
+    })
+}
+
+const Plantations = module.exports = mongoose.model('Plantations', PlantationSchema);

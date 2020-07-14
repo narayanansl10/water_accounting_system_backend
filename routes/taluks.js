@@ -29,6 +29,16 @@ router.get('/',(req,res)=> {
     })
 })
 
+router.get('/TaluksForDistrict',(req,res)=>{
+    Taluk.find({district_id:req.body.district_id},(err,docs)=>{
+        if(!err){
+            res.send(docs)
+        }
+        else{
+            res.json({'error':'cannot fetch'});
+        }
+    })
+})
 router.post('/update/:id', (req, res) => {
     if (!ObjectId.isValid(req.params.id))
         return res.status(400).send(`NO RECORD WITH GIVEN ID : ${req.params.id}`);

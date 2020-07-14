@@ -23,8 +23,12 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "http": "0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.21",
     "passport": "^0.4.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "socket.io": "^2.3.0",
+    "speakeasy": "^2.0.0",
+    "twilio": "^3.48.0"
   }
 }
