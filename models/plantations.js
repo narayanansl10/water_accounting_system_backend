@@ -26,6 +26,11 @@ const PlantationSchema = mongoose.Schema({
     village_name: {
         type:String,
         required: true
+    },
+    login_details: {
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'LoginDetails',
+        required:true
     }
 });
 
