@@ -19,15 +19,15 @@ const LoginDetailsSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    admin_role:{
-        type: Boolean,
+    role: {
+        type: String,
         require: true
     }
 });
 
-const LoginDetails = module.exports = mongoose.model('LoginDetails',LoginDetailsSchema);
-module.exports.addLogin = function(newLogin, callback) {
-        bcrypt.genSalt(10, (err, salt) => {
+const LoginDetails = module.exports = mongoose.model('LoginDetails', LoginDetailsSchema);
+module.exports.addLogin = function (newLogin, callback) {
+    bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newLogin.password, salt, (err, hash) => {
             if (err) throw err;
             newLogin.password = hash;
@@ -36,7 +36,7 @@ module.exports.addLogin = function(newLogin, callback) {
     });
 }
 
-module.exports.comparePassword = function(candidatePassword, hash, callback) {
+module.exports.comparePassword = function (candidatePassword, hash, callback) {
     bcrypt.compare(candidatePassword, hash, (err, isMatch) => {
         if (err) console.log(err);
         callback(null, isMatch);

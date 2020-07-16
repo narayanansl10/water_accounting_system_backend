@@ -22,9 +22,14 @@ router.post('/create', (req, res, next) => {
     });
 });
 
-router.get('/',(req,res)=> {
-    State.find({},(err,docs)=> {
-        res.send(docs);
+router.get('/', (req, res) => {
+    State.find({}, (err, docs) => {
+        if (docs.length != 0) {
+            res.send(docs);
+        }
+        else {
+            res.json({ "success": false });
+        }
     })
 })
 
@@ -35,7 +40,7 @@ router.post('/update/:id', (req, res) => {
     var newState = {
         state_name: req.body.state_name
     };
-    State.findByIdAndUpdate(req.params.id, { $set: newState },{new:true},(err, doc) => {
+    State.findByIdAndUpdate(req.params.id, { $set: newState }, { new: true }, (err, doc) => {
         if (!err) {
             res.json({ error: false, msg: "State Updated" });
         } else {

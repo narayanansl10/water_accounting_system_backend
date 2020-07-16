@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const ttl=require('mongoose-ttl');
 //Plantation Schema
 const PlantationSchema = mongoose.Schema({
     crop_id:{
@@ -11,7 +12,7 @@ const PlantationSchema = mongoose.Schema({
         required: true
     },
     plantation_date:{
-        type: String,
+        type: Date, //DD-MM-YYYY
         required: true
     },
     water_need:{
@@ -31,6 +32,10 @@ const PlantationSchema = mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'LoginDetails',
         required:true
+    },
+    time:{
+        type:Number,
+
     }
 });
 
@@ -52,5 +57,5 @@ function UserDetailsByTaluk(taluk_id){
         }
     })
 }
-
-const Plantations = module.exports = mongoose.model('Plantations', PlantationSchema);
+PlantationSchema.plugin(ttl, { ttl: '730d', reap: true });
+const Plantation = module.exports = mongoose.model('Plantations', PlantationSchema);

@@ -4,9 +4,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const config = require('../config/env');
 const LoginDetails=require('../models/logindetails');
-const User = require('../models/userdetails');
 const cors = require('cors');
-var ObjectId = require('mongoose').Types.ObjectId;
 //Login
 router.post('/authenticate', cors(),(req, res, next) => {
     const phone_number = req.body.phone_number;

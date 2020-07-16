@@ -18,31 +18,30 @@ mongoose.connection.on('error', (err) => {
 const app = express();
 
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
-  });
+});
 
 //Routes
 const auth = require('./routes/auth');
-const state=require('./routes/states');
-const district=require('./routes/districts');
-const cropInfo=require('./routes/cropinfo');
-const LoginDetails=require('./routes/logindetails');
-const taluk= require('./routes/taluks');
+const state = require('./routes/states');
+const district = require('./routes/districts');
+const cropInfo = require('./routes/cropinfo');
+const LoginDetails = require('./routes/logindetails');
+const taluk = require('./routes/taluks');
 const WaterInfo = require('./routes/waterinfo');
-const Plantation = require('./routes/plantations');
-const UserDetails = require('./routes/userdetails')
+const Plantations = require('./routes/plantations');
 //Ports
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 var production = false;
 
 //CORS
 if (production) {
     //app.use(cors({ origin: 'address_here' }));
 } else {
-    app.use(cors({ origin: "*" }));   
+    app.use(cors({ origin: "*" }));
 }
 
 // Set Static Folder
@@ -55,14 +54,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //App Starts
 app.use('/auth', auth);
-app.use('/states',state);
-app.use('/districts',district);
-app.use('/cropinfo',cropInfo);
-app.use('/logindetails',LoginDetails);
-app.use('/taluks',taluk);
-app.use('/waterinfo',WaterInfo);
-app.use('/plantations',Plantation);
-app.use('/userdetails',UserDetails);
+app.use('/states', state);
+app.use('/districts', district);
+app.use('/cropinfo', cropInfo);
+app.use('/logindetails', LoginDetails);
+app.use('/taluks', taluk);
+app.use('/waterinfo', WaterInfo);
+app.use('/plantations', Plantations);
 if (production) {
 
     var distDir = __dirname + "/dist/";

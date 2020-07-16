@@ -5,7 +5,7 @@ var ObjectId = require('mongoose').Types.ObjectId;
 
 router.post('/create', (req, res, next) => {
     let newTaluk = new Taluk({
-        taluk_name:req.body.taluk_name,
+        taluk_name: req.body.taluk_name,
         district_id: req.body.district_id
     });
     newTaluk.save((err, doc) => {
@@ -23,19 +23,21 @@ router.post('/create', (req, res, next) => {
     });
 });
 
-router.get('/',(req,res)=> {
-    Taluk.find({},(err,docs)=> {
+router.get('/', (req, res) => {
+    Taluk.find({}, (err, docs) => {
         res.send(docs);
     })
 })
 
-router.get('/TaluksForDistrict',(req,res)=>{
-    Taluk.find({district_id:req.body.district_id},(err,docs)=>{
-        if(!err){
+router.post('/TaluksForDistrict', (req, res) => {
+    if (!ObjectId.isValid(req.body.district_id))
+        return res.status(400).send(`NO RECORD WITH GIVEN ID : ${req.body.district_id}`);
+    Taluk.find({ district_id: req.body.district_id }, (err, docs) => {
+        if (!err) {
             res.send(docs)
         }
-        else{
-            res.json({'error':'cannot fetch'});
+        else {
+            res.json({ 'error': 'cannot fetch' });
         }
     })
 })
@@ -44,10 +46,10 @@ router.post('/update/:id', (req, res) => {
         return res.status(400).send(`NO RECORD WITH GIVEN ID : ${req.params.id}`);
 
     var newTaluk = {
-        taluk_name:req.body.taluk_name,
+        taluk_name: req.body.taluk_name,
         district_id: req.body.district_id
     };
-    Taluk.findByIdAndUpdate(req.params.id, { $set: newTaluk },{new:true},(err, doc) => {
+    Taluk.findByIdAndUpdate(req.params.id, { $set: newTaluk }, { new: true }, (err, doc) => {
         if (!err) {
             res.json({ error: false, msg: "Taluk Updated" });
         } else {

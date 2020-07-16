@@ -5,7 +5,7 @@ var ObjectId = require('mongoose').Types.ObjectId;
 
 router.post('/create', (req, res, next) => {
     let newDistrict = new District({
-        district_name:req.body.district_name,
+        district_name: req.body.district_name,
         state_id: req.body.state_id
     });
     newDistrict.save((err, doc) => {
@@ -23,19 +23,22 @@ router.post('/create', (req, res, next) => {
     });
 });
 
-router.get('/',(req,res)=> {
-    District.find({},(err,docs)=> {
+router.get('/', (req, res) => {
+    District.find({}, (err, docs) => {
         res.send(docs);
     })
 })
 
-router.get('/DistrictsForState',(req,res)=>{
-    District.find({state_id:req.body.state_id},(err,docs)=>{
-        if(!err){
+router.post('/DistrictsForState', (req, res) => {
+    if (!ObjectId.isValid(req.body.state_id))
+        return res.status(400).send(`NO RECORD WITH GIVEN ID : ${req.body.state_id}`);
+    District.find({ state_id: req.body.state_id }, (err, docs) => {
+        if (!err) {
             res.send(docs)
         }
-        else{
-            res.json({'error':'cannot fetch'});
+        else {
+            console.log(err)
+            res.json({ 'success': false });
         }
     })
 })
@@ -48,7 +51,7 @@ router.post('/update/:id', (req, res) => {
         district_name: req.body.district_name,
         state_id: req.body.state_id
     };
-    District.findByIdAndUpdate(req.params.id, { $set: newDistrict },{new:true},(err, doc) => {
+    District.findByIdAndUpdate(req.params.id, { $set: newDistrict }, { new: true }, (err, doc) => {
         if (!err) {
             res.json({ error: false, msg: "District Updated" });
         } else {
