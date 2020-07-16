@@ -25,9 +25,15 @@ router.post('/create', (req, res, next) => {
     });
 });
 
-router.get('/',(req,res)=> {
-    CropInfo.find({},(err,docs)=> {
-        res.send(docs);
+router.post('/', (req, res) => {
+    CropInfo.find({}, (err, docs) => {
+        if (!err) {
+            res.send(docs);
+        }
+        else {
+            res.json({ success: false })
+        }
+
     })
 })
 
@@ -41,7 +47,7 @@ router.post('/update/:id', (req, res) => {
         base_period: req.body.base_period,
         duty_const: req.body.duty_const
     };
-    CropInfo.findByIdAndUpdate(req.params.id, { $set: newCropInfo }, {new:true},(err, doc) => {
+    CropInfo.findByIdAndUpdate(req.params.id, { $set: newCropInfo }, { new: true }, (err, doc) => {
         if (!err) {
             res.json({ error: false, msg: "Crop Info Updated" });
         } else {
