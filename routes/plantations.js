@@ -30,7 +30,19 @@ router.post('/create', (req, res, next) => {
 
 router.get('/', (req, res) => {
     Plantation.find({}, (err, docs) => {
-        res.send(docs);
+        if (!err)
+            res.send(docs);
+    })
+})
+
+router.post('/PlantationForLogin', (req, res) => {
+    if (!objectId.isValid(req.body.id))
+        return res.status(400).send(`NO RECORD WITH GIVEN ID : ${req.body.id}`);
+    Plantation.find({ login_details: req.body.id }, (err, docs) => {
+        if (docs.length != 0)
+            res.send(docs);
+        else
+            res.status(400).send(`NO RECORD WITH GIVEN ID : ${req.body.id}`);
     })
 })
 
