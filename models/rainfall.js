@@ -57,5 +57,5 @@ const RainfallSchema = mongoose.Schema({
     }
 });
 
-const Rainfall = module.exports = mongoose.model('Rainfall', RainfallSchema, 'rainfalls')
+const Rainfall = module.exports = mongoose.model('Rainfall', RainfallSchema, 'rainfall')
 

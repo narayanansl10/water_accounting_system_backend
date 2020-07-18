@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
+var moment = require('moment');
 const Plantation = require('../models/plantations');
 const CropInfo = require('../models/cropinfo')
 const Rainfall = require('../models/rainfall')
+const Taluk = require('../models/taluks')
 var ObjectId = require('mongoose').Types.ObjectId;
 
 router.post('/dummyroute', (req, res, next) => {
-    CropInfo.find({ _id: req.body.crop_id }, (err, docs) => {
+    Rainfall.find({ district_id: req.body.district_id }, (err, docs) => {
         res.json({ "base": docs })
     });
 })
@@ -25,32 +27,57 @@ router.post('/create', (req, res, next) => {
         var duty_const = docs[0].duty_const;
         var area = parseFloat(req.body.area_of_plantation);
         newPlantation.water_need = area / ((duty_const * base) / delta);
-        console.log(newPlantation.water_need);
-        console.log("Date format: " + req.body.plantation_date)
         date = req.body.plantation_date.split("/");
-        console.log(date)
         day = parseInt(date[2])
         month = parseInt(date[1])
-        // qty=0.0
-        // period = parseFloat(base);
-        // if(month==1){
-        //     qty += day/30.0 * avgRainfall
-        //     period-=day/30.0
-        // }
-        // while(period>0)
-        newPlantation.save((err, doc) => {
-            if (err) {
-                res.json({
-                    error: true,
-                    msg: 'Failed to Create Plantation: ' + err
-                });
+        period = (base % 30 > 15) ? parseFloat(base) / 30 + 1 : parseFloat(base) / 30
+        avgRainfall = 0.0
+        month = (day > 15) ? month + 1 : month
+        Taluk.find({ _id: req.body.taluk_id }, (err, docs) => {
+            if (!err && docs.length > 0) {
+                Rainfall.find({ district_id: docs[0].district_id }, (errr, data) => {
+                    if (data.length > 0) {
+                        rainfallMonth = []
+                        rainfallMonth.push(data[0].JAN)
+                        rainfallMonth.push(data[0].FEB)
+                        rainfallMonth.push(data[0].MAR)
+                        rainfallMonth.push(data[0].APR)
+                        rainfallMonth.push(data[0].MAY)
+                        rainfallMonth.push(data[0].JUN)
+                        rainfallMonth.push(data[0].JUL)
+                        rainfallMonth.push(data[0].AUG)
+                        rainfallMonth.push(data[0].SEP)
+                        rainfallMonth.push(data[0].OCT)
+                        rainfallMonth.push(data[0].NOV)
+                        rainfallMonth.push(data[0].DEC)
+                        while (period > 0) {
+                            avgRainfall += rainfallMonth[(month - 1) % 12]
+                            period -= 1
+                            month += 1
+                        }
+                        avgRainfall /= 10
+                        newPlantation.water_need_rainfall = area / ((duty_const * base) / (delta - avgRainfall));
+                        newPlantation.save((err, doc) => {
+                            if (err) {
+                                res.json({
+                                    error: true,
+                                    msg: 'Failed to Create Plantation: ' + err
+                                });
+                            } else {
+                                res.json({
+                                    error: false,
+                                    msg: 'Plantation Created'
+                                });
+                            }
+                        });
+                    } else {
+                        res.send({ message: "Rainfall data not available" })
+                    }
+                })
             } else {
-                res.json({
-                    error: false,
-                    msg: 'Plantation Created'
-                });
+                res.send({ message: "District not found" })
             }
-        });
+        })
     });
 });
 
@@ -62,7 +89,6 @@ router.get('/', (req, res) => {
 })
 
 router.post('/PlantationForLogin', (req, res) => {
-    console.log(req.body)
     if (!ObjectId.isValid(req.body.id))
         return res.status(400).send(`NO RECORD WITH GIVEN ID : ${req.body.id}`);
     Plantation.find({ login_details: req.body.id }, (err, docs) => {
@@ -107,5 +133,28 @@ router.post('/delete/:id', (req, res) => {
         }
     });
 });
+
+router.post('/generateGraph', (req, res) => {
+    response = []
+    Plantation.find({
+        taluk_id: req.body.taluk_id,
+    }, (err, data) => {
+        var water_need_sum = []
+        var water_need_rainfall_sum = []
+        if (!err && data.length > 0) {
+            data.forEach((element) => {
+                CropInfo.find({ _id: element.crop_id }, (err, docs) => {
+                    if (!err & docs.length > 0) {
+                        expDate = moment(element.plantation_date).add(docs[0].base_period, 'days').format("DD MM YY").split(" ")
+                        date = moment(element.plantation_date).format("DD MM YY").split(" ")
+                    } else {
+                        res.json({ message: element.crop_id + ":No such crop found" })
+                    }
+                })
+            })
+            res.json(data)
+        }
+    })
+})
 
 module.exports = router;
