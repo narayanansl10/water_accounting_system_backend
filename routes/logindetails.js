@@ -9,7 +9,7 @@ router.post('/create', (req, res, next) => {
         phonenumber: req.body.phonenumber,
         password: req.body.password,
         aadhar_number: req.body.aadhar_number,
-        admin_role:req.body.admin_role
+        role: req.body.role
     });
 
     LoginDetails.addLogin(newLogin, (err, user) => {
@@ -27,8 +27,8 @@ router.post('/create', (req, res, next) => {
     });
 })
 
-router.get('/',(req,res)=> {
-    LoginDetails.find({},(err,docs)=> {
+router.get('/', (req, res) => {
+    LoginDetails.find({}, (err, docs) => {
         res.send(docs);
     })
 })
@@ -44,8 +44,8 @@ router.post('/update/:id', (req, res) => {
         aadhar_number: req.body.aadhar_number,
         admin_role: req.body.admin_role
     };
-    
-    LoginDetails.findByIdAndUpdate(req.params.id, { $set: newLogin }, {new:true},(err, doc) => {
+
+    LoginDetails.findByIdAndUpdate(req.params.id, { $set: newLogin }, { new: true }, (err, doc) => {
         if (!err) {
             res.json({ error: false, msg: "Login Updated" });
         } else {
@@ -67,4 +67,4 @@ router.post('/delete/:id', (req, res) => {
     });
 });
 
-module.exports=router;
+module.exports = router;
