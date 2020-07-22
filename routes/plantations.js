@@ -136,23 +136,33 @@ router.post('/delete/:id', (req, res) => {
 
 router.post('/generateGraph', (req, res) => {
     response = []
+    datapoints = []
+    //response.push({ type: 'spline' })
     Plantation.find({
         taluk_id: req.body.taluk_id,
     }, (err, data) => {
         var water_need_sum = []
         var water_need_rainfall_sum = []
         if (!err && data.length > 0) {
+            i = 0
+            console.log(data.length)
             data.forEach((element) => {
                 CropInfo.find({ _id: element.crop_id }, (err, docs) => {
+                    i += 1
                     if (!err & docs.length > 0) {
-                        expDate = moment(element.plantation_date).add(docs[0].base_period, 'days').format("DD MM YY").split(" ")
-                        date = moment(element.plantation_date).format("DD MM YY").split(" ")
+                        expDate = moment(element.plantation_date).add(docs[0].base_period, 'days')
+                        date = moment(element.plantation_date)
+                        while (date < expDate) {
+                            datapoints[0].date.month() ? response[date.month()] += (element.water_need / (docs[0].base_period / 30)) : response[date.month()] = (element.water_need / (docs[0].base_period / 30))
+                            date = date.add(1, 'M')
+                        }
+                        if (i === data.length)
+                            res.json(response)
                     } else {
                         res.json({ message: element.crop_id + ":No such crop found" })
                     }
                 })
             })
-            res.json(data)
         }
     })
 })

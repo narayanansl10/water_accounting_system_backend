@@ -119,7 +119,7 @@ db.once('open', function () {
                     else {
                         var id = docs._id;
                         console.log(id);
-                        var plantations1 = new Plantations({ taluk_id: TalukIDs[TalukNum - 1], crop_id: CropIDs[CropNum - 1], water_need: 0, village_name: "USSD Village Sample", plantation_date: "10-07-2020", area_of_plantation: Area, login_details: id })
+                        var plantations1 = new Plantations({ taluk_id: TalukIDs[TalukNum - 1], crop_id: CropIDs[CropNum - 1], water_need: 0, village_name: "USSD Village Sample", plantation_date: Date.now, area_of_plantation: Area, login_details: id })
                         plantations1.save(function (err, docs) {
                             if (err) return console.log(err);
                             else console.log("Thank You For Sharing Information");
