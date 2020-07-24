@@ -53,7 +53,7 @@ router.post('/create', (req, res, next) => {
                         rainfallMonth.push(data[0].NOV)
                         rainfallMonth.push(data[0].DEC)
                         while (period > 0) {
-                            avgRainfall += rainfallMonth[(month - 1) % 12]
+                            avgRainfall += parseFloat(rainfallMonth[(month - 1) % 12])
                             period -= 1
                             month += 1
                         }

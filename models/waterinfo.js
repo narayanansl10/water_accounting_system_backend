@@ -37,4 +37,4 @@ const WaterInfoSchema = mongoose.Schema({
 
 });
 
-const WaterInfo = module.exports = mongoose.model('WaterInfo', WaterInfoSchema);
+const WaterInfo = module.exports = mongoose.model('WaterInfo', WaterInfoSchema, 'waterinfos');
