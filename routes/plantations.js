@@ -19,7 +19,9 @@ router.post('/create', (req, res, next) => {
         plantation_date: req.body.plantation_date,
         taluk_id: req.body.taluk_id,
         village_name: req.body.village_name,
-        login_details: req.body.login_details
+        login_details: req.body.login_details,
+        water_need: 0,
+        water_need_rainfall: 0
     });
     CropInfo.find({ _id: req.body.crop_id }, (err, docs) => {
         var base = docs[0].base_period;
@@ -27,7 +29,7 @@ router.post('/create', (req, res, next) => {
         var duty_const = docs[0].duty_const;
         var area = parseFloat(req.body.area_of_plantation);
         newPlantation.water_need = area / ((duty_const * base) / delta);
-        date = req.body.plantation_date.split("/");
+        date = req.body.plantation_date.split("-");
         day = parseInt(date[2])
         month = parseInt(date[1])
         period = (base % 30 > 15) ? parseFloat(base) / 30 + 1 : parseFloat(base) / 30
@@ -57,6 +59,7 @@ router.post('/create', (req, res, next) => {
                         }
                         avgRainfall /= 10
                         newPlantation.water_need_rainfall = area / ((duty_const * base) / (delta - avgRainfall));
+                        console.log(avgRainfall)
                         newPlantation.save((err, doc) => {
                             if (err) {
                                 res.json({

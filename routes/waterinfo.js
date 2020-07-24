@@ -5,9 +5,14 @@ var ObjectId = require('mongoose').Types.ObjectId;
 
 router.post('/create', (req, res, next) => {
     let newWaterInfo = new WaterInfo({
-        waterbody_name: req.body.waterbody_name,
-        taluk_id:  req.body.taluk_id,
-        water_available: req.body.water_available
+        unique_id: req.body.unique_id,
+        latitude: req.body.latitude,
+        longitude: req.body.longitude,
+        tank_name: req.body.tank_name,
+        village: req.body.village,
+        taluk_id: req.body.taluk_id,
+        max_capacity: req.body.max_capacity,
+        available_capacity: req.body.available_capacity
     });
     newWaterInfo.save((err, doc) => {
         if (err) {
@@ -24,9 +29,14 @@ router.post('/create', (req, res, next) => {
     });
 });
 
-router.get('/',(req,res)=> {
-    WaterInfo.find({},(err,docs)=> {
-        res.send(docs);
+router.get('/', (req, res) => {
+    WaterInfo.find({}, (err, docs) => {
+        if (!err) {
+            res.send(docs);
+        }
+        else {
+            res.json({ 'error': "true", 'error': err })
+        }
     })
 })
 
@@ -35,11 +45,16 @@ router.post('/update/:id', (req, res) => {
         return res.status(400).send(`NO RECORD WITH GIVEN ID : ${req.params.id}`);
 
     var newWaterInfo = {
-        waterbody_name: req.body.waterbody_name,
-        taluk_id:  req.body.taluk_id,
-        water_available: req.body.water_available
+        unique_id: req.body.unique_id,
+        latitude: req.body.latitude,
+        longitude: req.body.longitude,
+        tank_name: req.body.tank_name,
+        village: req.body.village,
+        taluk_id: req.body.taluk_id,
+        max_capacity: req.body.max_capacity,
+        available_capacity: req.body.available_capacity
     };
-    WaterInfo.findByIdAndUpdate(req.params.id, { $set: newWaterInfo },{new:true},(err, doc) => {
+    WaterInfo.findByIdAndUpdate(req.params.id, { $set: newWaterInfo }, { new: true }, (err, doc) => {
         if (!err) {
             res.json({ error: false, msg: "WaterInfo Updated" });
         } else {
