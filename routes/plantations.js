@@ -4,7 +4,8 @@ var moment = require('moment');
 const Plantation = require('../models/plantations');
 const CropInfo = require('../models/cropinfo')
 const Rainfall = require('../models/rainfall')
-const Taluk = require('../models/taluks')
+const Taluk = require('../models/taluks');
+const { response } = require('express');
 var ObjectId = require('mongoose').Types.ObjectId;
 
 router.post('/dummyroute', (req, res, next) => {
@@ -27,7 +28,7 @@ router.post('/create', (req, res, next) => {
         var duty_const = docs[0].duty_const;
         var area = parseFloat(req.body.area_of_plantation);
         newPlantation.water_need = area / ((duty_const * base) / delta);
-        date = req.body.plantation_date.split("/");
+        date = req.body.plantation_date.split("-");
         day = parseInt(date[2])
         month = parseInt(date[1])
         period = (base % 30 > 15) ? parseFloat(base) / 30 + 1 : parseFloat(base) / 30
@@ -135,14 +136,13 @@ router.post('/delete/:id', (req, res) => {
 });
 
 router.post('/generateGraph', (req, res) => {
-    response = []
+    var responseData = []
+    var response_water_need = {}
+    var response_water_need_rainfall = {}
     datapoints = []
-    //response.push({ type: 'spline' })
     Plantation.find({
         taluk_id: req.body.taluk_id,
     }, (err, data) => {
-        var water_need_sum = []
-        var water_need_rainfall_sum = []
         if (!err && data.length > 0) {
             i = 0
             console.log(data.length)
@@ -153,11 +153,28 @@ router.post('/generateGraph', (req, res) => {
                         expDate = moment(element.plantation_date).add(docs[0].base_period, 'days')
                         date = moment(element.plantation_date)
                         while (date < expDate) {
-                            datapoints[0].date.month() ? response[date.month()] += (element.water_need / (docs[0].base_period / 30)) : response[date.month()] = (element.water_need / (docs[0].base_period / 30))
+                            response_water_need[date.month()] ? response_water_need[date.month()] += (element.water_need / (docs[0].base_period / 30)) : response_water_need[date.month()] = (element.water_need / (docs[0].base_period / 30))
+                            response_water_need_rainfall[date.month()] ? response_water_need_rainfall[date.month()] += (element.water_need_rainfall / (docs[0].base_period / 30)) : response_water_need_rainfall[date.month()] = (element.water_need_rainfall / (docs[0].base_period / 30))
                             date = date.add(1, 'M')
                         }
-                        if (i === data.length)
-                            res.json(response)
+                        if (i === data.length) {
+                            for (key in response_water_need) {
+                                label = {}
+                                label['x'] = key
+                                label['y'] = response_water_need[key]
+                                datapoints.push(label)
+                            }
+                            responseData.push({ label: 'slime', datapoints: datapoints })
+                            datapoints = []
+                            for (key in response_water_need_rainfall) {
+                                label = {}
+                                label['x'] = key
+                                label['y'] = response_water_need_rainfall[key]
+                                datapoints.push(label)
+                            }
+                            responseData.push({ label: 'slime', datapoints: datapoints })
+                            res.json(responseData)
+                        }
                     } else {
                         res.json({ message: element.crop_id + ":No such crop found" })
                     }
