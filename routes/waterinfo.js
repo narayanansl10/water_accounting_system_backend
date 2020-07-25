@@ -46,7 +46,7 @@ router.post('/waterBodyInfo', (req, res) => {
             resjson = { available_capacity: 0, max_capacity: 0, percentage: 0 }
             resjson.available_capacity = docs[0].available_capacity
             resjson.max_capacity = docs[0].max_capacity
-            resjson.percentage = parseFloat(docs[0].available_capacity / docs[0].max_capacity) * 100
+            resjson.percentage = parseFloat(docs[0].available_capacity / docs[0].max_capacity)
             res.send(resjson)
         }
         else {
