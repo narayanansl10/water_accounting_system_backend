@@ -144,7 +144,7 @@ router.post('/generateGraph', (req, res) => {
     var response_water_need_rainfall = {}
     datapoints = []
     Plantation.find({
-        taluk_id: req.body.taluk_id,
+        taluk_id: req.body.id,
     }, (err, data) => {
         if (!err && data.length > 0) {
             i = 0
@@ -189,7 +189,7 @@ router.post('/generateGraph', (req, res) => {
 
 router.post('/generateGraphByDistrict', (req, res) => {
     responseData = []
-    Taluk.find({ district_id: req.body.district_id }, (err, taluks) => {
+    Taluk.find({ district_id: req.body.id }, (err, taluks) => {
         i = 0
         response_water_need = {}
         response_water_need_rainfall = {}
@@ -240,7 +240,7 @@ router.post('/generateGraphByDistrict', (req, res) => {
 
 router.post('/generateWaterNeedByDistrict', (req, res) => {
     responseData = []
-    Taluk.find({ district_id: req.body.district_id }, (err, taluks) => {
+    Taluk.find({ district_id: req.body.id }, (err, taluks) => {
         i = 0
         response_water_need = {}
         response_water_need_rainfall = {}
