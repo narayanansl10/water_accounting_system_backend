@@ -31,7 +31,6 @@
     "path": "^0.12.7",
     "prompt-sync": "^4.2.0",
     "socket.io": "^2.3.0",
-    "speakeasy": "^2.0.0",
-    "twilio": "^3.48.0"
+    "speakeasy": "^2.0.0"
   }
 }
