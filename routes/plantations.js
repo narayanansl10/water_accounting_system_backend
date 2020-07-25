@@ -43,7 +43,7 @@ router.post('/create', (req, res, next) => {
                         rainfallMonth = []
                         rainfallMonth.push(data[0].JAN)
                         rainfallMonth.push(data[0].FEB)
-                        rainfallMonth.push(data[0].MAR)
+                        rainfallMonth.push(data[0].xR)
                         rainfallMonth.push(data[0].APR)
                         rainfallMonth.push(data[0].MAY)
                         rainfallMonth.push(data[0].JUN)
@@ -167,7 +167,7 @@ router.post('/generateGraph', (req, res) => {
                                 label['y'] = response_water_need[key]
                                 datapoints.push(label)
                             }
-                            responseData.push({ type: 'spline', dataPoints: datapoints })
+                            responseData.push({ label: 'splineArea', datapoints: datapoints })
                             datapoints = []
                             for (key in response_water_need_rainfall) {
                                 label = {}
@@ -175,7 +175,7 @@ router.post('/generateGraph', (req, res) => {
                                 label['y'] = response_water_need_rainfall[key]
                                 datapoints.push(label)
                             }
-                            responseData.push({ type: 'spline', dataPoints: datapoints })
+                            responseData.push({ label: 'splineArea', datapoints: datapoints })
                             res.json(responseData)
                         }
                     } else {
