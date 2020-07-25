@@ -40,6 +40,21 @@ router.get('/', (req, res) => {
     })
 })
 
+router.post('/waterBodyInfo', (req, res) => {
+    WaterInfo.find({ _id: req.body.waterbody_id }, (err, docs) => {
+        if (!err) {
+            resjson = { available_capacity: 0, max_capacity: 0, percentage: 0 }
+            resjson.available_capacity = docs[0].available_capacity
+            resjson.max_capacity = docs[0].max_capacity
+            resjson.percentage = parseFloat(docs[0].available_capacity / docs[0].max_capacity) * 100
+            res.send(resjson)
+        }
+        else {
+            res.json({ 'error': err })
+        }
+    })
+})
+
 router.post('/update/:id', (req, res) => {
     if (!ObjectId.isValid(req.params.id))
         return res.status(400).send(`NO RECORD WITH GIVEN ID : ${req.params.id}`);
