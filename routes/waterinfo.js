@@ -32,7 +32,6 @@ router.post('/create', (req, res, next) => {
 router.get('/', (req, res) => {
     WaterInfo.find({}, (err, docs) => {
         if (!err) {
-            console.log("Map Called")
             res.send(docs);
         }
         else {
