@@ -187,4 +187,104 @@ router.post('/generateGraph', (req, res) => {
     })
 })
 
+router.post('/generateGraphByDistrict', (req, res) => {
+    responseData = []
+    Taluk.find({ district_id: req.body.district_id }, (err, taluks) => {
+        i = 0
+        response_water_need = {}
+        response_water_need_rainfall = {}
+        taluks.forEach((taluk) => {
+            Plantation.find({ taluk_id: taluk._id }, (err, data) => {
+                if (!err && data.length > 0) {
+                    data.forEach((element) => {
+                        CropInfo.find({ _id: element.crop_id }, (err, docs) => {
+                            console.log(docs);
+                            if (!err & docs.length > 0) {
+                                expDate = moment(element.plantation_date).add(docs[0].base_period, 'days')
+                                date = moment(element.plantation_date)
+                                while (date < expDate) {
+                                    response_water_need[date.month()] ? response_water_need[date.month()] += (element.water_need / (docs[0].base_period / 30)) : response_water_need[date.month()] = (element.water_need / (docs[0].base_period / 30))
+                                    response_water_need_rainfall[date.month()] ? response_water_need_rainfall[date.month()] += (element.water_need_rainfall / (docs[0].base_period / 30)) : response_water_need_rainfall[date.month()] = (element.water_need_rainfall / (docs[0].base_period / 30))
+                                    date = date.add(1, 'M')
+                                }
+                            } else {
+                                res.json({ message: element.crop_id + ":No such crop found" })
+                            }
+                        })
+                    })
+                }
+                i += 1
+                if (i == taluks.length) {
+                    datapoints = []
+                    for (key in response_water_need) {
+                        label = {}
+                        label['x'] = key
+                        label['y'] = response_water_need[key]
+                        datapoints.push(label)
+                    }
+                    responseData.push({ type: 'splineArea', dataPoints: datapoints })
+                    datapoints = []
+                    for (key in response_water_need_rainfall) {
+                        label = {}
+                        label['x'] = key
+                        label['y'] = response_water_need_rainfall[key]
+                        datapoints.push(label)
+                    }
+                    responseData.push({ type: 'splineArea', dataPoints: datapoints })
+                    res.json(responseData)
+                }
+            })
+        })
+    })
+})
+
+router.post('/generateWaterNeedByDistrict', (req, res) => {
+    responseData = []
+    Taluk.find({ district_id: req.body.district_id }, (err, taluks) => {
+        i = 0
+        response_water_need = {}
+        response_water_need_rainfall = {}
+        taluks.forEach((taluk) => {
+            Plantation.find({ taluk_id: taluk._id }, (err, data) => {
+                if (!err && data.length > 0) {
+                    data.forEach((element) => {
+                        CropInfo.find({ _id: element.crop_id }, (err, docs) => {
+                            if (!err & docs.length > 0) {
+                                expDate = moment(element.plantation_date).add(docs[0].base_period, 'days')
+                                date = moment(Date.now())
+                                if (date < expDate) {
+                                    response_water_need[taluk.taluk_name] ? response_water_need[taluk.taluk_name] += (element.water_need / (docs[0].base_period / 30)) : response_water_need[taluk.taluk_name] = (element.water_need / (docs[0].base_period / 30))
+                                    response_water_need_rainfall[taluk.taluk_name] ? response_water_need_rainfall[taluk.taluk_name] += (element.water_need_rainfall / (docs[0].base_period / 30)) : response_water_need_rainfall[taluk.taluk_name] = (element.water_need_rainfall / (docs[0].base_period / 30))
+                                }
+                            } else {
+                                res.json({ message: element.crop_id + ":No such crop found" })
+                            }
+                        })
+                    })
+                }
+                i += 1
+                if (i == taluks.length) {
+                    datapoints = []
+                    for (key in response_water_need) {
+                        label = {}
+                        label['x'] = key
+                        label['y'] = response_water_need[key]
+                        datapoints.push(label)
+                    }
+                    responseData.push({ type: 'splineArea', dataPoints: datapoints })
+                    datapoints = []
+                    for (key in response_water_need_rainfall) {
+                        label = {}
+                        label['x'] = key
+                        label['y'] = response_water_need_rainfall[key]
+                        datapoints.push(label)
+                    }
+                    responseData.push({ type: 'splineArea', dataPoints: datapoints })
+                    res.json(responseData)
+                }
+            })
+        })
+    })
+})
+
 module.exports = router;
