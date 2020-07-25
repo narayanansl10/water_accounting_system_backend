@@ -167,7 +167,7 @@ router.post('/generateGraph', (req, res) => {
                                 label['y'] = response_water_need[key]
                                 datapoints.push(label)
                             }
-                            responseData.push({ label: 'slime', datapoints: datapoints })
+                            responseData.push({ type: 'spline', dataPoints: datapoints })
                             datapoints = []
                             for (key in response_water_need_rainfall) {
                                 label = {}
@@ -175,7 +175,7 @@ router.post('/generateGraph', (req, res) => {
                                 label['y'] = response_water_need_rainfall[key]
                                 datapoints.push(label)
                             }
-                            responseData.push({ label: 'slime', datapoints: datapoints })
+                            responseData.push({ type: 'spline', dataPoints: datapoints })
                             res.json(responseData)
                         }
                     } else {
