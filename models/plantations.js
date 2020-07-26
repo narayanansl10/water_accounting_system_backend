@@ -15,11 +15,23 @@ const PlantationSchema = mongoose.Schema({
         type: Date, //DD-MM-YYYY
         required: true
     },
+    survey_number: {
+        type: String,
+        required: true
+    },
     water_need: {
         type: Number,
         required: true
     },
     water_need_rainfall: {
+        type: Number,
+        required: false
+    },
+    discharge_water_need: {
+        type: Number,
+        required: true
+    },
+    discharge_water_need_rainfall: {
         type: Number,
         required: false
     },

@@ -40,12 +40,24 @@ router.get('/', (req, res) => {
     })
 })
 
+router.post('/waterbodyForTaluk', (req, res) => {
+    WaterInfo.find({ taluk_id: req.body.taluk_id }, (err, docs) => {
+        if (!err) {
+            res.send(docs);
+        }
+        else {
+            res.json({ 'error': err })
+        }
+    })
+})
+
 router.post('/waterBodyInfo', (req, res) => {
+    console.log("Incoming id", req.body.waterbody_id)
     WaterInfo.find({ _id: req.body.waterbody_id }, (err, docs) => {
         if (!err) {
             resjson = { available_capacity: 0, max_capacity: 0, percentage: 0 }
-            resjson.available_capacity = docs[0].available_capacity
-            resjson.max_capacity = docs[0].max_capacity
+            resjson.available_capacity = parseFloat(docs[0].available_capacity)
+            resjson.max_capacity = parseFloat(docs[0].max_capacity)
             resjson.percentage = parseFloat(docs[0].available_capacity / docs[0].max_capacity)
             res.send(resjson)
         }

@@ -17,19 +17,23 @@ router.post('/create', (req, res, next) => {
     let newPlantation = new Plantation({
         crop_id: req.body.crop_id,
         area_of_plantation: req.body.area_of_plantation,
+        survey_number: req.body.survey_number,
         plantation_date: req.body.plantation_date,
         taluk_id: req.body.taluk_id,
         village_name: req.body.village_name,
         login_details: req.body.login_details,
         water_need: 0,
-        water_need_rainfall: 0
+        water_need_rainfall: 0,
+        discharge_water_need: 0,
+        discharge_water_need_rainfall: 0
     });
     CropInfo.find({ _id: req.body.crop_id }, (err, docs) => {
         var base = docs[0].base_period;
         var delta = docs[0].delta;
         var duty_const = docs[0].duty_const;
         var area = parseFloat(req.body.area_of_plantation);
-        newPlantation.water_need = area / ((duty_const * base) / delta);
+        newPlantation.discharge_water_need = (area / ((duty_const * base) / delta))
+        newPlantation.water_need = (area / ((duty_const * base) / delta)) * 60 * 60 * 24 * base;
         date = req.body.plantation_date.split("-");
         day = parseInt(date[2])
         month = parseInt(date[1])
@@ -59,7 +63,8 @@ router.post('/create', (req, res, next) => {
                             month += 1
                         }
                         avgRainfall /= 10
-                        newPlantation.water_need_rainfall = area / ((duty_const * base) / (delta - avgRainfall));
+                        newPlantation.discharge_water_need_rainfall = (area / ((duty_const * base) / (delta - avgRainfall)))
+                        newPlantation.water_need_rainfall = (area / ((duty_const * base) / (delta - avgRainfall))) * 60 * 60 * 24 * base;
                         console.log(avgRainfall)
                         newPlantation.save((err, doc) => {
                             if (err) {
@@ -189,16 +194,18 @@ router.post('/generateGraph', (req, res) => {
 
 router.post('/generateGraphByDistrict', (req, res) => {
     responseData = []
+    console.log(req.body.id)
+    i = 0
     Taluk.find({ district_id: req.body.id }, (err, taluks) => {
-        i = 0
         response_water_need = {}
         response_water_need_rainfall = {}
         taluks.forEach((taluk) => {
             Plantation.find({ taluk_id: taluk._id }, (err, data) => {
                 if (!err && data.length > 0) {
+                    flag = 0
                     data.forEach((element) => {
                         CropInfo.find({ _id: element.crop_id }, (err, docs) => {
-                            console.log(docs);
+                            //console.log(docs);
                             if (!err & docs.length > 0) {
                                 expDate = moment(element.plantation_date).add(docs[0].base_period, 'days')
                                 date = moment(element.plantation_date)
@@ -214,8 +221,10 @@ router.post('/generateGraphByDistrict', (req, res) => {
                     })
                 }
                 i += 1
+                console.log(i, taluks.length)
                 if (i == taluks.length) {
                     datapoints = []
+                    console.log(response_water_need)
                     for (key in response_water_need) {
                         label = {}
                         label['x'] = key
