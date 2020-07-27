@@ -34,6 +34,7 @@ const taluk = require('./routes/taluks');
 const WaterInfo = require('./routes/waterinfo');
 const Plantations = require('./routes/plantations');
 const Problems = require('./routes/problem')
+const Announcement = require('./routes/announcement')
 
 //Ports
 const port = process.env.PORT || 4000;
@@ -63,7 +64,8 @@ app.use('/logindetails', LoginDetails);
 app.use('/taluks', taluk);
 app.use('/waterinfo', WaterInfo);
 app.use('/plantations', Plantations);
-app.use('/problems', Problems)
+app.use('/problems', Problems);
+app.use('/announcements', Announcement)
 
 if (production) {
 
