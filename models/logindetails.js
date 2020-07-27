@@ -9,7 +9,9 @@ const LoginDetailsSchema = mongoose.Schema({
     },
     phonenumber: {
         type: Number,
-        required: true
+        required: true,
+        unique: true,
+        dropDups: true
     },
     password: {
         type: String,
@@ -17,7 +19,9 @@ const LoginDetailsSchema = mongoose.Schema({
     },
     aadhar_number: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        dropDups: true
     },
     role: {
         type: String,

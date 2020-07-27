@@ -7,6 +7,8 @@ const Rainfall = require('../models/rainfall')
 const Taluk = require('../models/taluks');
 const { response } = require('express');
 var ObjectId = require('mongoose').Types.ObjectId;
+const xl = require('excel4node');
+
 
 router.post('/dummyroute', (req, res, next) => {
     Rainfall.find({ district_id: req.body.district_id }, (err, docs) => {
@@ -142,6 +144,94 @@ router.post('/delete/:id', (req, res) => {
         }
     });
 });
+
+router.get('/generateExcel/:taluk_id', (req, res) => {
+    jsonData = []
+    Plantation.find({
+        taluk_id: req.params.taluk_id,
+    }, (err, data) => {
+        if (!err && data.length > 0) {
+            for (i = 0; i < data.length; i++) {
+                var temp = {
+                    serial_no: '',
+                    survey_number: '',
+                    area_of_plantation: '',
+                    crop_name: '',
+                    plantation_date: '',
+                    water_need: '',
+                    water_need_rainfall: '',
+                    discharge_water_need: '',
+                    discharge_water_need_rainfall: ''
+                }
+                CropInfo.find({ _id: data[i].crop_id }, (error, docs) => {
+                    if (!error && docs.length > 0) {
+                        crop_loop_name = docs[0].crop_name;
+                        console.log(crop_loop_name)
+                    }
+                    else {
+                        res.json({ "error": error })
+                    }
+                })
+                temp.crop_name = crop_loop_name.toString();
+                temp.serial_no = (i + 1).toString();
+                temp.survey_number = data[i].survey_number.toString();
+                temp.area_of_plantation = data[i].area_of_plantation.toString();
+                temp.plantation_date = data[i].plantation_date.toString();
+                temp.water_need = data[i].water_need.toString();
+                temp.water_need_rainfall = data[i].water_need_rainfall.toString();
+                temp.discharge_water_need = data[i].discharge_water_need.toString();
+                temp.discharge_water_need_rainfall = data[i].discharge_water_need_rainfall.toString();
+                //console.log(temp)
+                jsonData.push(temp)
+            }
+            const wb = new xl.Workbook();
+            Taluk.find({ _id: req.params.taluk_id }, (err1, docs) => {
+                if (!err1) {
+                    talukName = docs[0].taluk_name
+                }
+                else {
+                    res.json({ "error": err1 })
+                }
+            })
+            // console.log(talukName)
+            var worksheetName = '' + talukName + '_Crop_Details_1'
+            const ws = wb.addWorksheet(worksheetName);
+            const headingColumnNames = [
+                "Serial No.",
+                "Survey No.",
+                "Area in Hectares",
+                "Crop Name",
+                "Date of Plantation",
+                "Water Need in m^3",
+                "Water Need in m^3 in Account of Rainfall of this district",
+                "Discharge Need in m^3 / sec",
+                "Discharge Need in m^3 /sec in Account of Rainfall of this district",
+            ]
+            //Write Column Title in Excel file
+            let headingColumnIndex = 1;
+            headingColumnNames.forEach(heading => {
+                ws.cell(1, headingColumnIndex++)
+                    .string(heading)
+            });
+
+            //Write Data in Excel file
+            let rowIndex = 2;
+            jsonData.forEach(record => {
+                let columnIndex = 1;
+                Object.keys(record).forEach(columnName => {
+                    ws.cell(rowIndex, columnIndex++)
+                        .string(record[columnName])
+                });
+                rowIndex++;
+            });
+            var fileName = '' + talukName + '_Crop_Details.xlsx'
+            wb.write(fileName, res);
+        }
+        else {
+            res.json({ "error": err })
+        }
+    })
+})
 
 router.post('/generateGraph', (req, res) => {
     var responseData = []
