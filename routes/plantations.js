@@ -149,12 +149,13 @@ router.get('/generateExcel/:taluk_id', (req, res) => {
     jsonData = []
     Plantation.find({
         taluk_id: req.params.taluk_id,
-    }, (err, data) => {
+    }, async (err, data) => {
         if (!err && data.length > 0) {
             for (i = 0; i < data.length; i++) {
                 var temp = {
                     serial_no: '',
                     survey_number: '',
+                    village_name: '',
                     area_of_plantation: '',
                     crop_name: '',
                     plantation_date: '',
@@ -163,18 +164,21 @@ router.get('/generateExcel/:taluk_id', (req, res) => {
                     discharge_water_need: '',
                     discharge_water_need_rainfall: ''
                 }
-                CropInfo.find({ _id: data[i].crop_id }, (error, docs) => {
-                    if (!error && docs.length > 0) {
-                        crop_loop_name = docs[0].crop_name;
+                let crop_loop_name = ""
+                try {
+                    const d = await CropInfo.find({ _id: data[i].crop_id }).catch((e) => { })
+                    if (d.length > 0) {
+                        crop_loop_name = d[0].crop_name;
                         console.log(crop_loop_name)
                     }
-                    else {
-                        res.json({ "error": error })
-                    }
-                })
+                } catch (error) {
+                    res.json({ "error": error })
+                }
+
                 temp.crop_name = crop_loop_name.toString();
                 temp.serial_no = (i + 1).toString();
                 temp.survey_number = data[i].survey_number.toString();
+                temp.village_name = data[i].village_name.toString();
                 temp.area_of_plantation = data[i].area_of_plantation.toString();
                 temp.plantation_date = data[i].plantation_date.toString();
                 temp.water_need = data[i].water_need.toString();
@@ -185,20 +189,20 @@ router.get('/generateExcel/:taluk_id', (req, res) => {
                 jsonData.push(temp)
             }
             const wb = new xl.Workbook();
-            Taluk.find({ _id: req.params.taluk_id }, (err1, docs) => {
-                if (!err1) {
-                    talukName = docs[0].taluk_name
-                }
-                else {
-                    res.json({ "error": err1 })
-                }
-            })
+            let talukName = ""
+            try {
+                const taluks = await Taluk.find({ _id: req.params.taluk_id })
+                talukName = taluks[0].taluk_name
+            } catch (error) {
+                res.json({ "error": error })
+            }
             // console.log(talukName)
-            var worksheetName = '' + talukName + '_Crop_Details_1'
+            var worksheetName = '' + talukName + '_Crop_Details'
             const ws = wb.addWorksheet(worksheetName);
             const headingColumnNames = [
                 "Serial No.",
                 "Survey No.",
+                "Village Name",
                 "Area in Hectares",
                 "Crop Name",
                 "Date of Plantation",
@@ -225,6 +229,7 @@ router.get('/generateExcel/:taluk_id', (req, res) => {
                 rowIndex++;
             });
             var fileName = '' + talukName + '_Crop_Details.xlsx'
+            res.setHeader('Content-Type', 'application/octet-stream')
             wb.write(fileName, res);
         }
         else {
