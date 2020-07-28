@@ -28,6 +28,15 @@ router.get('/', (req, res) => {
         res.send(docs);
     })
 })
+router.get('/talukForId/:id', (req, res) => {
+    Taluk.find({ _id: req.params.id }, (err, docs) => {
+        if (!err) {
+            console.log(docs)
+            res.send(docs)
+        }
+        else { res.json({ "error": err }) }
+    })
+})
 
 router.post('/TaluksForDistrict', (req, res) => {
     if (!ObjectId.isValid(req.body.district_id))

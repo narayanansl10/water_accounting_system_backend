@@ -186,52 +186,53 @@ router.get('/generateExcel/:taluk_id', (req, res) => {
                 temp.water_need_rainfall = data[i].water_need_rainfall.toString();
                 temp.discharge_water_need = data[i].discharge_water_need.toString();
                 temp.discharge_water_need_rainfall = data[i].discharge_water_need_rainfall.toString();
-                //console.log(temp)
+                console.log(temp)
                 jsonData.push(temp)
             }
-            const wb = new xl.Workbook();
-            let talukName = ""
-            try {
-                const taluks = await Taluk.find({ _id: req.params.taluk_id })
-                talukName = taluks[0].taluk_name
-            } catch (error) {
-                res.json({ "error": error })
-            }
-            // console.log(talukName)
-            var worksheetName = '' + talukName + '_Crop_Details'
-            const ws = wb.addWorksheet(worksheetName);
-            const headingColumnNames = [
-                "Serial No.",
-                "Survey No.",
-                "Village Name",
-                "Area in Hectares",
-                "Crop Name",
-                "Date of Plantation",
-                "Water Need in m^3",
-                "Water Need in m^3 in Account of Rainfall of this district",
-                "Discharge Need in m^3 / sec",
-                "Discharge Need in m^3 /sec in Account of Rainfall of this district",
-            ]
-            //Write Column Title in Excel file
-            let headingColumnIndex = 1;
-            headingColumnNames.forEach(heading => {
-                ws.cell(1, headingColumnIndex++)
-                    .string(heading)
-            });
+            // const wb = new xl.Workbook();
+            // let talukName = ""
+            // try {
+            //     const taluks = await Taluk.find({ _id: req.params.taluk_id })
+            //     talukName = taluks[0].taluk_name
+            // } catch (error) {
+            //     res.json({ "error": error })
+            // }
+            // // console.log(talukName)
+            // var worksheetName = '' + talukName + '_Crop_Details'
+            // const ws = wb.addWorksheet(worksheetName);
+            // const headingColumnNames = [
+            //     "Serial No.",
+            //     "Survey No.",
+            //     "Village Name",
+            //     "Area in Hectares",
+            //     "Crop Name",
+            //     "Date of Plantation",
+            //     "Water Need in m^3",
+            //     "Water Need in m^3 in Account of Rainfall of this district",
+            //     "Discharge Need in m^3 / sec",
+            //     "Discharge Need in m^3 /sec in Account of Rainfall of this district",
+            // ]
+            // //Write Column Title in Excel file
+            // let headingColumnIndex = 1;
+            // headingColumnNames.forEach(heading => {
+            //     ws.cell(1, headingColumnIndex++)
+            //         .string(heading)
+            // });
 
-            //Write Data in Excel file
-            let rowIndex = 2;
-            jsonData.forEach(record => {
-                let columnIndex = 1;
-                Object.keys(record).forEach(columnName => {
-                    ws.cell(rowIndex, columnIndex++)
-                        .string(record[columnName])
-                });
-                rowIndex++;
-            });
-            var fileName = '' + talukName + '_Crop_Details.xlsx'
-            res.setHeader('Content-Type', 'application/octet-stream')
-            wb.write(fileName, res);
+            // //Write Data in Excel file
+            // let rowIndex = 2;
+            // jsonData.forEach(record => {
+            //     let columnIndex = 1;
+            //     Object.keys(record).forEach(columnName => {
+            //         ws.cell(rowIndex, columnIndex++)
+            //             .string(record[columnName])
+            //     });
+            //     rowIndex++;
+            // });
+            // var fileName = '' + talukName + '_Crop_Details.xlsx'
+            // //res.setHeader('Content-Type', 'application/octet-stream')
+            // //wb.write(fileName, res);
+            res.send(jsonData)
         }
         else {
             res.json({ "error": err })
@@ -288,59 +289,75 @@ router.post('/generateGraph', (req, res) => {
     })
 })
 
-router.post('/generateGraphByDistrict', (req, res) => {
+router.post('/generateGraphByDistrict', async (req, res) => {
     responseData = []
     console.log(req.body.id)
     i = 0
-    Taluk.find({ district_id: req.body.id }, (err, taluks) => {
-        response_water_need = {}
-        response_water_need_rainfall = {}
-        taluks.forEach((taluk) => {
-            Plantation.find({ taluk_id: taluk._id }, (err, data) => {
-                if (!err && data.length > 0) {
-                    flag = 0
-                    data.forEach((element) => {
-                        CropInfo.find({ _id: element.crop_id }, (err, docs) => {
-                            //console.log(docs);
-                            if (!err & docs.length > 0) {
-                                expDate = moment(element.plantation_date).add(docs[0].base_period, 'days')
-                                date = moment(element.plantation_date)
-                                while (date < expDate) {
-                                    response_water_need[date.month()] ? response_water_need[date.month()] += (element.water_need / (docs[0].base_period / 30)) : response_water_need[date.month()] = (element.water_need / (docs[0].base_period / 30))
-                                    response_water_need_rainfall[date.month()] ? response_water_need_rainfall[date.month()] += (element.water_need_rainfall / (docs[0].base_period / 30)) : response_water_need_rainfall[date.month()] = (element.water_need_rainfall / (docs[0].base_period / 30))
-                                    date = date.add(1, 'M')
-                                }
-                            } else {
-                                res.json({ message: element.crop_id + ":No such crop found" })
+    let taluks = []
+    taluks = await Taluk.find({ district_id: req.body.id }).catch(e => { res.json({ "err": e }) })
+    try {
+        response_water_need = []
+        response_water_need_rainfall = []
+        let data = "";
+        taluks.forEach(async (taluk) => {
+            try {
+                data = await Plantation.find({ taluk_id: taluk._id }).catch(err => { res.json({ "error": err }) })
+                if (data.length > 0) {
+                    let docs = ""
+                    for (let j = 0; j < data.length; j += 1) {
+                        try {
+                            docs = await CropInfo.find({ _id: data[j].crop_id }).catch(error => { res.json({ "error": err }) })
+                        } catch (e) {
+                            res.json({ "error": e })
+                        }
+                        if (docs.length > 0) {
+                            console.log(j, data.length)
+                            expDate = moment(data[j].plantation_date).add(docs[0].base_period, 'days')
+                            date = moment(data[j].plantation_date)
+                            while (date < expDate) {
+                                response_water_need[date.month()] ? response_water_need[date.month()] += (data[j].water_need / (docs[0].base_period / 30)) : response_water_need[date.month()] = (data[j].water_need / (docs[0].base_period / 30))
+                                response_water_need_rainfall[date.month()] ? response_water_need_rainfall[date.month()] += (data[j].water_need_rainfall / (docs[0].base_period / 30)) : response_water_need_rainfall[date.month()] = (data[j].water_need_rainfall / (docs[0].base_period / 30))
+                                date = date.add(1, 'M')
                             }
-                        })
-                    })
-                }
-                i += 1
-                console.log(i, taluks.length)
-                if (i == taluks.length) {
-                    datapoints = []
-                    console.log(response_water_need)
-                    for (key in response_water_need) {
-                        label = {}
-                        label['x'] = key
-                        label['y'] = response_water_need[key]
-                        datapoints.push(label)
+
+                        } else {
+                            res.json({ message: data[j].crop_id + ":No such crop found" })
+                        }
+                        if (j == data.length - 1) {
+                            i += 1
+                        }
+                        if (i == taluks.length) {
+                            datapoints = []
+                            console.log(response_water_need)
+                            for (key in response_water_need) {
+                                label = {}
+                                label['x'] = key
+                                label['y'] = response_water_need[key]
+                                datapoints.push(label)
+                            }
+                            responseData.push({ type: 'splineArea', dataPoints: datapoints })
+                            datapoints = []
+                            for (key in response_water_need_rainfall) {
+                                label = {}
+                                label['x'] = key
+                                label['y'] = response_water_need_rainfall[key]
+                                datapoints.push(label)
+                            }
+                            responseData.push({ type: 'splineArea', dataPoints: datapoints })
+                            // res.json(responseData)
+                            // console.log(dataPoints)
+                        }
+                        console.log("Crrt" + response_water_need)
+                        console.log(i)
                     }
-                    responseData.push({ type: 'splineArea', dataPoints: datapoints })
-                    datapoints = []
-                    for (key in response_water_need_rainfall) {
-                        label = {}
-                        label['x'] = key
-                        label['y'] = response_water_need_rainfall[key]
-                        datapoints.push(label)
-                    }
-                    responseData.push({ type: 'splineArea', dataPoints: datapoints })
-                    res.json(responseData)
                 }
-            })
+            } catch (e) {
+                console.log(e)
+            }
         })
-    })
+    } catch (e) {
+        res.json({ "error": e })
+    }
 })
 
 router.post('/generateWaterNeedByDistrict', (req, res) => {
@@ -362,7 +379,7 @@ router.post('/generateWaterNeedByDistrict', (req, res) => {
                                     response_water_need_rainfall[taluk.taluk_name] ? response_water_need_rainfall[taluk.taluk_name] += (element.water_need_rainfall / (docs[0].base_period / 30)) : response_water_need_rainfall[taluk.taluk_name] = (element.water_need_rainfall / (docs[0].base_period / 30))
                                 }
                             } else {
-                                res.json({ message: element.crop_id + ":No such crop found" })
+                                res.json({ message: data[j].crop_id + ":No such crop found" })
                             }
                         })
                     })

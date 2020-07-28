@@ -71,17 +71,7 @@ router.post('/update/:id', (req, res) => {
     if (!ObjectId.isValid(req.params.id))
         return res.status(400).send(`NO RECORD WITH GIVEN ID : ${req.params.id}`);
 
-    var newWaterInfo = {
-        unique_id: req.body.unique_id,
-        latitude: req.body.latitude,
-        longitude: req.body.longitude,
-        tank_name: req.body.tank_name,
-        village: req.body.village,
-        taluk_id: req.body.taluk_id,
-        max_capacity: req.body.max_capacity,
-        available_capacity: req.body.available_capacity
-    };
-    WaterInfo.findByIdAndUpdate(req.params.id, { $set: newWaterInfo }, { new: true }, (err, doc) => {
+    WaterInfo.findByIdAndUpdate(req.params.id, { $set: { available_capacity: req.body.available_capacity } }, { new: true }, (err, doc) => {
         if (!err) {
             res.json({ error: false, msg: "WaterInfo Updated" });
         } else {
