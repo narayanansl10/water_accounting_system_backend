@@ -30,9 +30,9 @@ router.post('/create', (req, res, next) => {
         discharge_water_need_rainfall: 0
     });
     CropInfo.find({ _id: req.body.crop_id }, (err, docs) => {
-        var base = docs[0].base_period;
-        var delta = docs[0].delta;
-        var duty_const = docs[0].duty_const;
+        var base = parseInt(docs[0].base_period);
+        var delta = parseFloat(docs[0].delta);
+        var duty_const = parseFloat(docs[0].duty_const);
         var area = parseFloat(req.body.area_of_plantation);
         newPlantation.discharge_water_need = (area / ((duty_const * base) / delta))
         newPlantation.water_need = (area / ((duty_const * base) / delta)) * 60 * 60 * 24 * base;
@@ -49,7 +49,7 @@ router.post('/create', (req, res, next) => {
                         rainfallMonth = []
                         rainfallMonth.push(data[0].JAN)
                         rainfallMonth.push(data[0].FEB)
-                        rainfallMonth.push(data[0].xR)
+                        rainfallMonth.push(data[0].MAR)
                         rainfallMonth.push(data[0].APR)
                         rainfallMonth.push(data[0].MAY)
                         rainfallMonth.push(data[0].JUN)
@@ -59,6 +59,7 @@ router.post('/create', (req, res, next) => {
                         rainfallMonth.push(data[0].OCT)
                         rainfallMonth.push(data[0].NOV)
                         rainfallMonth.push(data[0].DEC)
+                        console.log(rainfallMonth)
                         while (period > 0) {
                             avgRainfall += parseFloat(rainfallMonth[(month - 1) % 12])
                             period -= 1
