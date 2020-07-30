@@ -425,7 +425,13 @@ router.post('/talukwisecrops', (req, res) => {
                     }
                 },
                 {
-                    $group: { _id: '$crop_id', sum_of_water_need: { $sum: '$water_need' }, sum_of_water_need_rainfall: { $sum: '$water_need_rainfall' }, sum_of_discharge_water_need: { $sum: '$discharge_water_need' }, sum_of_discharge_water_need_rainfall: { $sum: '$discharge_water_need_rainfall' }, sum_area: { $sum: '$area_of_plantation' } }
+                    $group: {
+                        _id: '$crop_id', sum_of_water_need: { $sum: '$water_need' },
+                        sum_of_water_need_rainfall: { $sum: '$water_need_rainfall' },
+                        sum_of_discharge_water_need: { $sum: '$discharge_water_need' },
+                        sum_of_discharge_water_need_rainfall: { $sum: '$discharge_water_need_rainfall' },
+                        sum_area: { $sum: '$area_of_plantation' }
+                    }
                 }
                 ], (err, data) => {
                     if (err) {
