@@ -409,4 +409,34 @@ router.post('/generateWaterNeedByDistrict', (req, res) => {
     })
 })
 
+router.post('/talukwisecrops', (req, res) => {
+    var talukId = req.body.taluk_id;
+    Plantation.find({ taluk_id: talukId }, (err, docs) => {
+        if (err) {
+            res.json({ "Error": err })
+        }
+        else {
+            Plantation.aggregate(
+                [{
+                    $match: {
+                        taluk_id: {
+                            $in: docs.map(function (d) { return d.taluk_id })
+                        }
+                    }
+                },
+                {
+                    $group: { _id: '$crop_id', sum_of_water_need: { $sum: '$water_need' }, sum_of_water_need_rainfall: { $sum: '$water_need_rainfall' }, sum_of_discharge_water_need: { $sum: '$discharge_water_need' }, sum_of_discharge_water_need_rainfall: { $sum: '$discharge_water_need_rainfall' }, sum_area: { $sum: '$area_of_plantation' } }
+                }
+                ], (err, data) => {
+                    if (err) {
+                        res.json({ "Error": err })
+                    } else {
+                        res.send(data)
+                    }
+                }
+            )
+        }
+    })
+})
+
 module.exports = router;
