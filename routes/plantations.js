@@ -160,6 +160,7 @@ router.get('/generateExcel/:taluk_id', (req, res) => {
                     area_of_plantation: '',
                     crop_name: '',
                     plantation_date: '',
+                    harverst_date: '',
                     water_need: '',
                     water_need_rainfall: '',
                     discharge_water_need: '',
@@ -171,17 +172,17 @@ router.get('/generateExcel/:taluk_id', (req, res) => {
                     if (d.length > 0) {
                         crop_loop_name = d[0].crop_name;
                         console.log(crop_loop_name)
+                        temp.harverst_date = moment(data[i].plantation_date).add(d[0].base_period, 'days').toString()
                     }
                 } catch (error) {
                     res.json({ "error": error })
                 }
-
                 temp.crop_name = crop_loop_name.toString();
                 temp.serial_no = (i + 1).toString();
                 temp.survey_number = data[i].survey_number.toString();
                 temp.village_name = data[i].village_name.toString();
                 temp.area_of_plantation = data[i].area_of_plantation.toString();
-                temp.plantation_date = data[i].plantation_date.toString();
+                temp.plantation_date = moment(data[i].plantation_date).toString();
                 temp.water_need = data[i].water_need.toString();
                 temp.water_need_rainfall = data[i].water_need_rainfall.toString();
                 temp.discharge_water_need = data[i].discharge_water_need.toString();
