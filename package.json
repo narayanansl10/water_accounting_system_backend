@@ -4,7 +4,7 @@
   "description": "WAS",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
@@ -28,8 +28,5 @@
   },
   "engines": {
     "node": "10.16.0"
-  },
-  "scripts": {
-    "start": "node index.js"
   }
 }
