@@ -29,13 +29,15 @@ const auth = require('./routes/auth');
 const state = require('./routes/states');
 const district = require('./routes/districts');
 const cropInfo = require('./routes/cropinfo');
+const soilInfo = require('./routes/soilinfo');
+const rainfall = require('./routes/rainfall');
 const LoginDetails = require('./routes/logindetails');
 const taluk = require('./routes/taluks');
 const WaterInfo = require('./routes/waterinfo');
 const Plantations = require('./routes/plantations');
 const Problems = require('./routes/problem')
 const Announcement = require('./routes/announcement')
-const OTP = require('./routes/otp')
+const OTP = require('./routes/otp');
 
 //Ports
 const port = process.env.PORT || 4000;
@@ -61,6 +63,8 @@ app.use('/auth', auth);
 app.use('/states', state);
 app.use('/districts', district);
 app.use('/cropinfo', cropInfo);
+app.use('/soilinfo', soilInfo);
+app.use('/rainfall',rainfall);
 app.use('/logindetails', LoginDetails);
 app.use('/taluks', taluk);
 app.use('/waterinfo', WaterInfo);

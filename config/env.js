@@ -6,7 +6,7 @@ config = {
     application: {
         secret: 'secret',
         env: 'development'
-    }   
+    }
 }
 
 module.exports = config;

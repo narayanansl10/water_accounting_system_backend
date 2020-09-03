@@ -32,7 +32,7 @@ router.get('/talukForId/:id', (req, res) => {
     Taluk.find({ _id: req.params.id }, (err, docs) => {
         if (!err) {
             console.log(docs)
-            res.send(docs)
+            res.send(docs[0])
         }
         else { res.json({ "error": err }) }
     })

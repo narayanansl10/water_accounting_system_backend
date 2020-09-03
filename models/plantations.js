@@ -51,7 +51,18 @@ const PlantationSchema = mongoose.Schema({
     },
     time: {
         type: Number,
-
+    },
+    soil_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    water_resource: {
+        type: String,
+        required: true
+    },
+    water_resource_percentage: {
+        type: Number,
+        require: false
     }
 });
 
