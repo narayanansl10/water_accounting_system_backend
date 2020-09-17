@@ -1,7 +1,7 @@
 config = {
     database: {
         //Server DB
-        name: 'mongodb+srv://admin:admin@was.hy9kp.mongodb.net/test'
+        name: //Server Address Removed For Config Purposes
     },
     application: {
         secret: 'secret',
